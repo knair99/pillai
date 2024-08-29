@@ -2,7 +2,7 @@ from confluent_kafka import Consumer, KafkaException, KafkaError
 
 # Configuration for the Kafka consumer
 conf = {
-    'bootstrap.servers': 'localhost:29092',  # Update this to your Kafka server address
+    'bootstrap.servers': 'localhost:29092',
     'group.id': 'malware_detection_group',  # Consumer group ID
     'auto.offset.reset': 'earliest',  # Start reading at the earliest offset
 }
@@ -33,14 +33,12 @@ def consume_loop(consumer, topics):
             if msg.error():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     # End of partition event
-                    print(
-                        f'\n pillai:kafka:consumer: {msg.topic()} [{msg.partition()}] reached end at offset {msg.offset()}')
+                    print(f'\n pillai:kafka:consumer: {msg.topic()} [{msg.partition()}] reached end at offset {msg.offset()}')
                 elif msg.error():
                     raise KafkaException(msg.error())
             else:
                 # Otherwise, we have successfully received a message
-                print(
-                    f'\n pillai:kafka:consumer: Received message: {msg.value().decode("utf-8")} from topic {msg.topic()}')
+                print(f'\n pillai:kafka:consumer: Received message: {msg.value().decode("utf-8")} from topic {msg.topic()}')
 
     except KeyboardInterrupt:
         print(f'\n pillai:kafka:consumer: Exiting - interrupted by user')
