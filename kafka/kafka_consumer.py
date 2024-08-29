@@ -3,7 +3,7 @@ from confluent_kafka import Consumer, KafkaException, KafkaError
 # Configuration for the Kafka consumer
 conf = {
     'bootstrap.servers': 'localhost:29092',  # Update this to your Kafka server address
-    'group.id': 'game_consumer_group',  # Consumer group ID
+    'group.id': 'malware_detection_group',  # Consumer group ID
     'auto.offset.reset': 'earliest',  # Start reading at the earliest offset
 }
 
@@ -11,7 +11,16 @@ conf = {
 kafka_consumer = Consumer(conf)
 
 # Subscribe to the topic
-kafka_consumer.subscribe(['test_topic'])
+kafka_consumer.subscribe(['lua_scripts'])
+
+
+# Basic rule-based malware detection (for illustration purposes)
+def is_malicious(lua_script):
+    suspicious_keywords = ['while true do', 'os.execute', 'io.popen']
+    for keyword in suspicious_keywords:
+        if keyword in lua_script:
+            return True
+    return False
 
 
 # Function to handle incoming messages
@@ -24,12 +33,14 @@ def consume_loop(consumer, topics):
             if msg.error():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     # End of partition event
-                    print(f'\n pillai:kafka:consumer: {msg.topic()} [{msg.partition()}] reached end at offset {msg.offset()}')
+                    print(
+                        f'\n pillai:kafka:consumer: {msg.topic()} [{msg.partition()}] reached end at offset {msg.offset()}')
                 elif msg.error():
                     raise KafkaException(msg.error())
             else:
-                # Proper message
-                print(f'\n pillai:kafka:consumer: Received message: {msg.value().decode("utf-8")} from topic {msg.topic()}')
+                # Otherwise, we have successfully received a message
+                print(
+                    f'\n pillai:kafka:consumer: Received message: {msg.value().decode("utf-8")} from topic {msg.topic()}')
 
     except KeyboardInterrupt:
         print(f'\n pillai:kafka:consumer: Exiting - interrupted by user')
