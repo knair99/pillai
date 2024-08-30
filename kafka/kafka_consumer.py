@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from confluent_kafka import Consumer, KafkaException, KafkaError
 
 # Configuration for the Kafka consumer
@@ -11,7 +13,7 @@ conf = {
 kafka_consumer = Consumer(conf)
 
 # Subscribe to the topic
-kafka_consumer.subscribe(['lua_scripts'])
+kafka_consumer.subscribe(['processed_malware_results'])
 
 
 # Basic rule-based malware detection (for illustration purposes)
@@ -28,6 +30,7 @@ def consume_loop(consumer, topics):
     try:
         while True:
             msg = consumer.poll(timeout=1.0)
+            pprint(msg)
             if msg is None:
                 continue
             if msg.error():
@@ -49,4 +52,4 @@ def consume_loop(consumer, topics):
 
 
 # Start consuming messages
-consume_loop(kafka_consumer, ['test_topic'])
+consume_loop(kafka_consumer, ['processed_malware_results'])

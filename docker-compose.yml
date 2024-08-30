@@ -30,6 +30,7 @@ services:
     image: bitnami/spark:latest
     environment:
       - SPARK_MODE=master
+      - SPARK_VERSION="3.5.2"
     ports:
       - "7077:7077"
       - "8080:8080"
@@ -43,8 +44,18 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_VERSION="3.5.2"
     ports:
       - "8081:8081"
+    networks:
+      - pillai_my_network
+
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    command: start-single-node --insecure
+    ports:
+      - "26257:26257"
+      - "8082:8082"
     networks:
       - pillai_my_network
 

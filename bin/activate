@@ -68,3 +68,8 @@ fi
 # Call hash to forget past commands. Without forgetting
 # past commands the $PATH changes we made may not be respected
 hash -r 2> /dev/null
+
+# Setting java home here so the venv can always find a runtime
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)  # or your system's Java path
+export PATH=$JAVA_HOME/bin:$PATH
+
