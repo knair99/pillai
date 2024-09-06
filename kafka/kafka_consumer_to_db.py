@@ -49,7 +49,7 @@ def write_to_db(connection, msg):
             logger.warning("pillai:kafka:consumer:db writer: Empty message received, skipping.")
             return
 
-        row = json.loads(value.decode('utf-8'))  # Decode and parse JSON
+        row = json.loads(value)  # Decode and parse JSON
         logger.info(f"pillai:kafka:consumer:db writer: Decoded message: {row}")
 
         cursor = connection.cursor()
@@ -91,7 +91,7 @@ def consume_loop(consumer, connection):
 if __name__ == "__main__":
     # Initialize Kafka consumer
     kafka_consumer = Consumer(conf)
-    kafka_consumer.subscribe(['processed_malware_results'])
+    kafka_consumer.subscribe(['malware_results'])
 
     # Connect to the database
     db_connection = connect_to_db()

@@ -13,7 +13,7 @@ conf = {
 kafka_consumer = Consumer(conf)
 
 # Subscribe to the topic
-kafka_consumer.subscribe(['processed_malware_results'])
+kafka_consumer.subscribe(['lua_scripts'])
 
 
 # Basic rule-based malware detection (for illustration purposes)

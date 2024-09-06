@@ -5,6 +5,7 @@ from confluent_kafka import Producer
 # Configuration for the Kafka producer
 conf = {
     'bootstrap.servers': 'localhost:29092',
+    'api.version.request': 'false'
 }
 
 # Create a producer instance
