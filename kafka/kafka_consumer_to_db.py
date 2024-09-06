@@ -1,7 +1,13 @@
 import logging
-import psycopg2
-import json
+import os
+import sys
 from confluent_kafka import Consumer, KafkaException, KafkaError
+
+# Add the parent directory of 'kafka/' and 'db/' to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Now import the functions from db_ops
+from db.db_ops import connect_to_db, write_to_db
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,55 +20,6 @@ conf = {
     'auto.offset.reset': 'earliest',  # Start reading at the earliest offset
 }
 
-# Database configuration
-db_host = "localhost"
-db_port = "26257"
-db_name = "defaultdb"
-db_user = "root"
-db_password = ""
-
-
-# Connect to the database
-def connect_to_db():
-    try:
-        connection = psycopg2.connect(
-            host=db_host,
-            port=db_port,
-            dbname=db_name,
-            user=db_user,
-            password=db_password
-        )
-        logger.info("pillai:kafka:consumer:db writer: Connected to the database")
-        return connection
-    except Exception as e:
-        logger.error(f"pillai:kafka:consumer:db writer: Error connecting to the database: {e}")
-        return None
-
-
-# Write message to the database
-def write_to_db(connection, msg):
-    try:
-        value = msg.value()
-        logger.info(f"pillai:kafka:consumer:db writer: Message value type: {type(value)}")
-
-        if value is None or value == b'':
-            logger.warning("pillai:kafka:consumer:db writer: Empty message received, skipping.")
-            return
-
-        # row = json.loads(value)  # Decode and parse JSON
-        # logger.info(f"pillai:kafka:consumer:db writer: Decoded message: {row}")
-
-        cursor = connection.cursor()
-        cursor.execute(
-            "INSERT INTO malware_detection (script, result) VALUES (%s, %s)",
-            (msg.key().decode('unicode_escape'), msg.value().decode('unicode_escape'))
-        )
-        connection.commit()
-        cursor.close()
-        logger.info("pillai:kafka:consumer:db writer: Message written to the database")
-    except Exception as e:
-        logger.error(f"pillai:kafka:consumer:db writer: Error writing to DB: {e}")
-
 
 # Kafka consumer loop
 # Kafka consumer loop
@@ -71,13 +28,13 @@ def consume_loop(consumer, connection):
         while True:
             msg = consumer.poll(timeout=1.0)  # Poll for new messages
 
-            if msg is None\
-                    :
+            if msg is None:
                 continue
             if msg.error():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     # End of partition event
-                    logger.info(f"pillai:kafka:consumer:db writer: Reached end of partition: {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
+                    logger.info(
+                        f"pillai:kafka:consumer:db writer: Reached end of partition: {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
                 elif msg.error():
                     raise KafkaException(msg.error())
             else:

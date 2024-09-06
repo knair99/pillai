@@ -26,7 +26,7 @@ def is_malicious(lua_script):
 
 
 # Function to handle incoming messages
-def consume_loop(consumer, topics):
+def consume_loop(consumer):
     try:
         while True:
             msg = consumer.poll(timeout=1.0)
@@ -36,12 +36,14 @@ def consume_loop(consumer, topics):
             if msg.error():
                 if msg.error().code() == KafkaError._PARTITION_EOF:
                     # End of partition event
-                    print(f'\n pillai:kafka:consumer: {msg.topic()} [{msg.partition()}] reached end at offset {msg.offset()}')
+                    print(
+                        f'\n pillai:kafka:consumer: {msg.topic()} [{msg.partition()}] reached end at offset {msg.offset()}')
                 elif msg.error():
                     raise KafkaException(msg.error())
             else:
                 # Otherwise, we have successfully received a message
-                print(f'\n pillai:kafka:consumer: Received message: {msg.value().decode("utf-8")} from topic {msg.topic()}')
+                print(
+                    f'\n pillai:kafka:consumer: Received message: {msg.value().decode("utf-8")} from topic {msg.topic()}')
 
     except KeyboardInterrupt:
         print(f'\n pillai:kafka:consumer: Exiting - interrupted by user')
@@ -52,4 +54,4 @@ def consume_loop(consumer, topics):
 
 
 # Start consuming messages
-consume_loop(kafka_consumer, ['processed_malware_results'])
+consume_loop(kafka_consumer)
