@@ -49,13 +49,13 @@ def write_to_db(connection, msg):
             logger.warning("pillai:kafka:consumer:db writer: Empty message received, skipping.")
             return
 
-        row = json.loads(value)  # Decode and parse JSON
-        logger.info(f"pillai:kafka:consumer:db writer: Decoded message: {row}")
+        # row = json.loads(value)  # Decode and parse JSON
+        # logger.info(f"pillai:kafka:consumer:db writer: Decoded message: {row}")
 
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO malware_results (script, detection_result) VALUES (%s, %s)",
-            (row['script'], row['detection_result'])
+            "INSERT INTO malware_detection (script, result) VALUES (%s, %s)",
+            (msg.key().decode('unicode_escape'), msg.value().decode('unicode_escape'))
         )
         connection.commit()
         cursor.close()
@@ -71,7 +71,8 @@ def consume_loop(consumer, connection):
         while True:
             msg = consumer.poll(timeout=1.0)  # Poll for new messages
 
-            if msg is None:
+            if msg is None\
+                    :
                 continue
             if msg.error():
                 if msg.error().code() == KafkaError._PARTITION_EOF:

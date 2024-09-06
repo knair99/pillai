@@ -12,7 +12,13 @@ connection = psycopg2.connect(
 cursor = connection.cursor()
 
 # Example query to create a table (adjust as needed)
-cursor.execute("CREATE TABLE IF NOT EXISTS malware_detection (id UUID PRIMARY KEY, script TEXT, result TEXT);")
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS malware_detection (
+        id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(), 
+        script TEXT, 
+        result TEXT
+    );
+""")
 
 connection.commit()
 cursor.close()
