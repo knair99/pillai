@@ -20,8 +20,6 @@ conf = {
     'auto.offset.reset': 'earliest',  # Start reading at the earliest offset
 }
 
-
-# Kafka consumer loop
 # Kafka consumer loop
 def consume_loop(consumer, connection):
     try:
@@ -44,7 +42,6 @@ def consume_loop(consumer, connection):
         pass
     finally:
         consumer.close()
-
 
 if __name__ == "__main__":
     # Initialize Kafka consumer
