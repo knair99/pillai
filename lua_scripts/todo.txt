@@ -1,0 +1,16 @@
+
+0. setup machine for BEDEV2 and start watching some videos to understand concepts
+
+1. read evernote quickly to brush up on concepts 
+	- advanced machine learning
+	- neural networks
+	- computer vision
+	- transformers
+have the jupyter notebooks handy for computer vision
+
+2. stretch: watch video on transformers 
+
+3. begin small project for similarity classifier and rest api for classification
+	see if i can code a transformer there 
+
+4. python best practices from time to time 
